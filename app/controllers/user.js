@@ -3,6 +3,8 @@ var User = require('../models/user');
 var nodemailer = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
 
+var moment = require('moment')
+
 // 开启一个 SMTP 连接池
 var transport = nodemailer.createTransport(smtpTransport({
     // 主机
@@ -145,6 +147,57 @@ exports.info = function (req, res) {
     }
 }
 
+exports.update = function (req, res) {
+	var id = req.body.id
+	var role =  req.body.role
+	User.findById(id, function (err, user) {
+		if (err) {
+			console.log(err)
+		}
+		if (user) {
+			User.update({_id: user._id}, {role: role}, function (err) {
+				if (err) {
+					console.log(err);
+				}
+				res.json({
+		            code: '000000',
+		            msg: '成功'
+		        })
+			})
+		} else {
+			res.json({
+	            code: '000007',
+	            msg: '用户不存在'
+	        })
+		}
+	})
+}
+
+
+exports.del = function (req, res) {
+	var id = req.body.id
+	User.findById(id, function (err, user) {
+		if (err) {
+			console.log(err)
+		}
+		if (user) {
+			User.remove({_id: user._id}, function (err) {
+				if (err) {
+					console.log(err);
+				}
+				res.json({
+		            code: '000000',
+		            msg: '成功'
+		        })
+			})
+		} else {
+			res.json({
+	            code: '000007',
+	            msg: '用户不存在'
+	        })
+		}
+	})
+}
 
 /*
  * 登录
@@ -152,9 +205,6 @@ exports.info = function (req, res) {
  * @param password 密码
  */
 exports.signin = function (req, res) {
-	console.log('-------------')
-	console.log(req.body);
-	console.log('-------------')
 	var _user = req.body;
 	var name = _user.name;
 	var password = _user.password;
@@ -178,7 +228,10 @@ exports.signin = function (req, res) {
 					data: user
 				});
 			} else {
-				return res.redirect('/signin');
+				return res.json({
+					code: '000001',
+					msg: '密码错误'
+				});
 			}
 		})
 	})
@@ -198,16 +251,35 @@ exports.logout = function (req, res) {
     });
 }
 
+var format = moment().format('YYYY-MM-DD')
 
 exports.list = function (req, res) {
-	User.fetch(function (err, users) {
+	// User.fetch(function (err, users) {
+	// 	if (err) {
+	// 		console.log(err);
+	// 	}
+	// 	res.json({
+	//         code: '000000',
+	//         msg: '成功',
+	//         data: users
+	//     });
+	// })
+	User.find({}, {'password': 0}).sort('meta.updateAt').exec(function (err, users) {
 		if (err) {
 			console.log(err);
 		}
-		res.render('userlist', {
-			title: '用户列表页',
-			users: users
-		})
+		// var _users = []
+		// users.forEach(function (val) {
+		// 	val.createDate = moment(val.meta.createAt).format('YYYY-MM-DD')
+		// 	val.updateDate = moment(val.meta.updateAt).format('YYYY-MM-DD')
+		// 	console.log(val)
+		// 	_users.push(val)
+		// })
+		res.json({
+	        code: '000000',
+	        msg: '成功',
+	        data: users
+	    });
 	})
 }
 // 登录

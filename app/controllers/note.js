@@ -16,12 +16,12 @@ exports.detail = function (req, res) {
 			console.log(err);
 		}
 	})
-	Note.findById(id, function (err, note) {
+	Note.findOne({_id: id}).populate('user', 'name').populate('category', 'name').exec(function (err, note) {
 		if (err) {
 			console.log(err);
 		}
 
-		Comment.find({'note': id}).populate('from', 'name').populate('reply.from reply.to', 'name').exec(function (err, comments) {
+		Comment.find({'note': id}).populate('from', 'name').exec(function (err, comments) {
 			// console.log(comments[2].reply);
 			if (err) {
 				console.log(err);
@@ -183,8 +183,9 @@ exports.save = function (req, res) {
 }
 
 exports.list = function (req, res) {
-	var pageNo = +req.body.pageNo
-	var pageSize = +req.body.pageSize
+	var category = req.body.category
+	var pageNo = +req.body.pageNo || 0
+	var pageSize = +req.body.pageSize || 10
 	console.log('------------------')
 	console.log(req.body)
 	console.log('------------------')
@@ -194,26 +195,56 @@ exports.list = function (req, res) {
 	// 	console.log(data)
 	// 	console.log('~~~~~~~~~~~~~~~~~~~~~~~~')
 	// })
-	Note.find({}).populate({path: 'user', select: 'name'}).populate({path: 'category', select: 'name'}).limit(pageSize).skip(index).sort({'meta.createAt': -1}).exec(function (err, notes) {
-		if (err) {
-			console.log(err);
+	if (category) {
+		var query = {}
+		if (category == 'my') {
+			var user = req.session.user
+			query.user = user._id
+		} else {
+			query.category = category
 		}
-		Note.count({}, function (err, count) {
+		
+		Note.find(query).populate({path: 'user', select: 'name'}).populate({path: 'category', select: 'name'}).limit(pageSize).skip(index).sort({'meta.createAt': -1}).exec(function (err, notes) {
 			if (err) {
 				console.log(err);
 			}
-			res.json({
-				code: '000000',
-				msg: '成功',
-				data: {
-					notes: notes,
-					currentPage: pageNo,
-					total: count
+			Note.count(query, function (err, count) {
+				if (err) {
+					console.log(err);
 				}
+				res.json({
+					code: '000000',
+					msg: '成功',
+					data: {
+						notes: notes,
+						currentPage: pageNo,
+						total: count
+					}
+				})
 			})
-		})
-		
-	})
+		})	
+	} else {
+		Note.find({}).populate({path: 'user', select: 'name'}).populate({path: 'category', select: 'name'}).limit(pageSize).skip(index).sort({'meta.createAt': -1}).exec(function (err, notes) {
+			if (err) {
+				console.log(err);
+			}
+			Note.count({}, function (err, count) {
+				if (err) {
+					console.log(err);
+				}
+				res.json({
+					code: '000000',
+					msg: '成功',
+					data: {
+						notes: notes,
+						currentPage: pageNo,
+						total: count
+					}
+				})
+			})
+		})	
+	}
+	
 	// Note.fetch(function (err, notes) {
 	// 	if (err) {
 	// 		console.log(err);
@@ -228,14 +259,15 @@ exports.list = function (req, res) {
 
 exports.del = function (req, res) {
 	// console.log(req.query);
-	var id = req.query.id;
+	var id = req.body.id;
 	if (id) {
-		Movie.remove({_id: id}, function (err) {
+		Note.remove({_id: id}, function (err) {
 			if (err) {
 				console.log(err);
 			} else{
 				res.json({
-					code: '000000'
+					code: '000000',
+					msg: '成功'
 				})	
 			}
 			

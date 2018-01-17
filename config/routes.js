@@ -54,7 +54,13 @@ module.exports = function (app) {
 	// app.get('/signup', User.showSignup)
 	// app.get('/signin', User.showSignin)
 
-	// app.get('/admin/user/list', User.signinRequired, User.adminRequired, User.list)
+	app.get('/blog/user/list', User.signinRequired, User.adminRequired, User.list)
+
+
+	app.post('/blog/user/update', User.signinRequired, User.adminRequired, User.update)
+
+
+	app.post('/blog/user/del', User.signinRequired, User.adminRequired, User.del)
 
 	/*
 	 * 登出
@@ -81,13 +87,15 @@ module.exports = function (app) {
 	// Note
 	app.post('/blog/save', User.signinRequired, Note.save)
 
-	app.post('/blog/detail', User.signinRequired, Note.detail)
+	app.post('/blog/detail', Note.detail)
 
-	app.post('/blog/list', User.signinRequired, Note.list)
+	app.post('/blog/list', Note.list)
+
+	app.post('/blog/del', User.signinRequired, User.adminRequired, Note.del)
 
 
-	// // Comment
-	// app.post('/movie/comment', User.signinRequired, Comment.save)
+	// Comment
+	app.post('/blog/comment', User.signinRequired, Comment.save)
 
 
 
@@ -96,7 +104,7 @@ module.exports = function (app) {
 
 	app.post('/blog/admin/category/save', User.signinRequired, User.adminRequired, Category.save)
 
-	app.get('/blog/admin/category/list', User.signinRequired, User.adminRequired, Category.list)
+	app.get('/blog/category/list', Category.list)
 
 	app.post('/blog/admin/category/edit', User.signinRequired, User.adminRequired, Category.edit)
 
