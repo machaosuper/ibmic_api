@@ -83,6 +83,8 @@ module.exports = function (app) {
 
 	// app.delete('/admin/movie/list', User.signinRequired, User.adminRequired, Movie.del)	
 
+	// upload
+	app.post('/blog/upload', User.signinRequired, multipartMiddleware, Note.upload)
 
 	// Note
 	app.post('/blog/save', User.signinRequired, Note.save)

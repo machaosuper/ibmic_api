@@ -1,25 +1,15 @@
-// var Movie = require('../models/movie');
 var Category = require('../models/category');
 var moment = require('moment')
 
-// exports.new = function (req, res) {
-// 	res.render('category_admin', {
-// 		title: '后台分类录入页',
-// 		category: {}
-// 	})
-// }
 
 exports.save = function (req, res) {
-	console.log('---------------')
-	console.log(req.body)
-	console.log('---------------')
 	var _category = req.body;
 	Category.findOne({name: _category.name}, function (err, category) {
 		if (err) {
 			console.log(err)
 		}
 		if (!category) {
-			var category = new Category(_category);
+			category = new Category(_category);
 			category.save(function (err, category) {
 				if (err) {
 					console.log(err);
@@ -46,7 +36,6 @@ exports.list = function (req, res) {
 		if (err) {
 			console.log(err);
 		}
-		// console.log(categories);
 		var _categories = []
 		categories.forEach((val) => {
 			let category = {}
@@ -66,15 +55,12 @@ exports.list = function (req, res) {
 
 exports.edit = function (req, res) {
 	var body = req.body
-	console.log('---------------')
-	console.log(body)
-	console.log('---------------')
 	var categoryId = body.categoryId
 	var categoryName = body.categoryName
 	var editType = body.editType
 	// editType : 01 更新 02删除
-	if (editType == '01' && categoryName && categoryId) {
-		Category.update({_id: categoryId}, {$set: {name: category.name}}, function (err, category) {
+	if (editType === '01' && categoryName && categoryId) {
+		Category.update({_id: categoryId}, {$set: {name: categoryName}}, function (err, category) {
 			if (err) {
 				console.log(err)
 			}
@@ -85,7 +71,7 @@ exports.edit = function (req, res) {
 			})
 		})
 	}
-	if (editType == '02' && categoryId) {
+	if (editType === '02' && categoryId) {
 		Category.remove({_id: categoryId}, function (err, category) {
 			if (err) {
 				console.log(err)

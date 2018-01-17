@@ -5,28 +5,12 @@ var smtpTransport = require('nodemailer-smtp-transport');
 
 var moment = require('moment')
 
+var config = require('../../config/bin.js')
+
 // 开启一个 SMTP 连接池
-var transport = nodemailer.createTransport(smtpTransport({
-    // 主机
-    host: "smtp.qq.com",
-    // 使用 SSL
-    secure: true,
-    // 使用 SSL
-    secureConnection: true,
-    // SMTP 端口
-    port: 465,
-    auth: {
-        // 账号
-        user: "272110541@qq.com",
-        // 密码
-        pass: "zsedcftgb311211"
-    }
-}));
+var transport = nodemailer.createTransport(smtpTransport(config.emailConfig));
 
 exports.signup = function (req, res) {
-    console.log('-------------')
-    console.log(req.body);
-    console.log('-------------')
     var _user = req.body;
     if (!_user.name || !_user.password || !_user.email) {
         return res.json({
@@ -68,17 +52,20 @@ exports.signup = function (req, res) {
 						}
 						req.session.user = user;
 						var mailOptions = {
-                            // 发件地址
-						    from: "ibmic<272110541@qq.com>", 
-						  to: _user.email, // 收件列表
-						  subject: "请激活您的账号", // 标题
-						  text:"hello请激活您的账号",
-						  html: `<div style="max-width: 550px; background: #f8f8f8; padding: 20px; font-size: 13px;">
+							// 发件地址
+						    from: 'ibmic<272110541@qq.com>',
+						    // 收件列表
+						  	to: _user.email,
+						  	// 标题
+						  	subject: '请激活您的账号',
+						  	text: 'hello请激活您的账号',
+						  	// html 内容
+						  	html: `<div style="max-width: 550px; background: #f8f8f8; padding: 20px; font-size: 13px;">
 						  			<div style="padding: 10px 0px 10px 0px;">
 						  				请点击以下链接，激活帐号:
 						  			</div>
-						  			<a style="color: #6093bb;" href="http://localhost:3000/blog/activation/${user.password}" target="_blank">http://localhost:3000/blog/activation/${user.password}</a>
-						  		</div>` // html 内容
+						  			<a style="color: #6093bb;" href="${config.apiUrl}blog/activation/${user.password}" target="_blank">${config.apiUrl}blog/activation/${user.password}</a>
+						  		</div>`
 						}
 						// 发送邮件
 						transport.sendMail(mailOptions, function(error, response) {
@@ -89,9 +76,6 @@ exports.signup = function (req, res) {
 						    	msg: error
 						    })
 						  } else {
-						    console.log(response);
-							// res.redirect('/');
-							// console.log(user)
 							res.json({
 								code: '000000',
 								msg: '注册成功, 请查收邮件激活！',
@@ -116,10 +100,7 @@ exports.signup = function (req, res) {
 exports.activation = function (req, res) {
 	var verify = req.params.verify;
 	var user = req.session.user;
-	console.log('session.user------------------')
-	console.log(user)
-	console.log('session.user------------------')
-	if (verify == user.password) {
+	if (verify === user.password) {
 		// user.role = 2;
 		// _user = new User(user);
 		User.update({_id: user._id}, {role: 2}, function (err, user) {
@@ -213,7 +194,10 @@ exports.signin = function (req, res) {
 			console.log(err);
 		}
 		if (!user) {
-			return res.redirect('/signup');
+			return res.json({
+				code: '000001',
+				msg: '用户不存在'
+			});
 		}
 		user.comparePassword(password, function (err, isMatch) {
 			if (err) {
@@ -221,7 +205,6 @@ exports.signin = function (req, res) {
 			}
 			if (isMatch) {
 				req.session.user = user;
-				// return res.redirect('/');
 				return res.json({
 					code: '000000',
 					msg: '成功',

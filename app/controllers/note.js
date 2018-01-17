@@ -3,7 +3,7 @@ var Category = require('../models/category');
 var Comment = require('../models/comment');
 var _ = require('underscore');
 
-
+var config = require('../../config/bin.js')
 
 var fs = require('fs')
 var path = require('path')
@@ -45,45 +45,32 @@ exports.detail = function (req, res) {
 	})
 }
 
-exports.new = function (req, res) {
-	Category.fetch(function (err, categories) {
-		if (err) {
-			console.log(err);
-		}
-		res.render('admin', {
-			title: '后台录入页',
-			movie: {},
-			categories: categories
-		})
-	})
-	
-}
 
-exports.update = function (req, res) {
-	var id = req.params.id;
+// exports.update = function (req, res) {
+// 	var id = req.params.id;
 
-	if (id) {
-		Movie.findById(id, function (err, movie) {
-			if (err) {
-				console.log(err);
-			}
-			Category.fetch(function (err, categories) {
-				if (err) {
-					console.log(err);
-				}
-				res.render('admin', {
-					title: '后台更新页面',
-					movie: movie,
-					categories: categories
-				})
-			})
-		})
-	}
-}
+// 	if (id) {
+// 		Movie.findById(id, function (err, movie) {
+// 			if (err) {
+// 				console.log(err);
+// 			}
+// 			Category.fetch(function (err, categories) {
+// 				if (err) {
+// 					console.log(err);
+// 				}
+// 				res.render('admin', {
+// 					title: '后台更新页面',
+// 					movie: movie,
+// 					categories: categories
+// 				})
+// 			})
+// 		})
+// 	}
+// }
 // 存储图片
-exports.savePoster = function (req, res, next) {
+exports.upload = function (req, res) {
 	console.log(req.files);
-	var posterData = req.files.uploadPoster;
+	var posterData = req.files.image;
 	var filePath = posterData.path;
 	// var originalname = posterData.originalname;
 	var originalname = posterData.originalname || posterData.originalFilename;
@@ -93,14 +80,22 @@ exports.savePoster = function (req, res, next) {
 			// var type = posterData.extension;
 			var type = posterData.extension || posterData.type.split('/')[1];
 			var poster = timestamp + '.' + type;
-			var newPath = path.join(__dirname, '../../', '/public/upload/' + poster);
+			var newPath = '/ftpfile/' + poster;
 			fs.writeFile(newPath, data, function (err) {
-				req.poster = poster;
-				next();
+				res.json({
+					code: '000000',
+					msg: '成功',
+					data: config.fileUrl + poster
+				})
+				// req.poster = poster;
+				// next();
 			})
 		})
 	} else {
-		next();
+		res.json({
+			code: '999999',
+			msg: '上传失败'
+		})
 	}
 }
 
@@ -186,18 +181,10 @@ exports.list = function (req, res) {
 	var category = req.body.category
 	var pageNo = +req.body.pageNo || 0
 	var pageSize = +req.body.pageSize || 10
-	console.log('------------------')
-	console.log(req.body)
-	console.log('------------------')
 	var index = pageNo * pageSize;
-	// Note.find({}).select('createAt').exec(function (err, data) {
-	// 	console.log('~~~~~~~~~~~~~~~~~~~~~~~~')
-	// 	console.log(data)
-	// 	console.log('~~~~~~~~~~~~~~~~~~~~~~~~')
-	// })
 	if (category) {
 		var query = {}
-		if (category == 'my') {
+		if (category === 'my') {
 			var user = req.session.user
 			query.user = user._id
 		} else {

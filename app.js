@@ -29,7 +29,7 @@ var dbUrl = 'mongodb://127.0.0.1:27017/ibmic-blog';
 
 mongoose.connect(dbUrl);
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 8080;
 var app = express();
 
 // 日志
