@@ -1,7 +1,7 @@
 module.exports = {
 	fileUrl: 'http://img.ibmic.cn/',
 	apiUrl: 'http://api.ibmic.cn/',
-    	emailConfig: {
+    emailConfig: {
         // 主机
         host: 'smtp.qq.com',
         // 使用 SSL
