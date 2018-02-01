@@ -111,12 +111,14 @@ exports.activation = function (req, res) {
 				if (err) {
 					console.log(err);
 				}
-
-				req.session.user.role = 2;
-				console.log('-------------------------');
-				console.log(req.session.user);
-				console.log('-------------------------');
-				res.redirect('http://www.ibmic.cn')
+				delete req.session.user;
+				User.findOne({_id: userId}, function (err, _user) {
+					if (err) {
+						console.log(err);
+					}
+					req.session.user = _user;
+					res.redirect('http://www.ibmic.cn')
+				})
 			})
 		} else {
 			res.json({
