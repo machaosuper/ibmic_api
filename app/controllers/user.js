@@ -53,7 +53,7 @@ exports.signup = function (req, res) {
 						req.session.user = user;
 						var mailOptions = {
 							// 发件地址
-						    from: 'ibmic<3486095838@qq.com>',
+						    from: 'ibmic<272110541@qq.com>',
 						    // 收件列表
 						  	to: _user.email,
 						  	// 标题
