@@ -111,7 +111,10 @@ exports.activation = function (req, res) {
 				if (err) {
 					console.log(err);
 				}
+				// console.log(req.session.user);
+				delete req.session.user;
 				req.session.user = user;
+				// console.log(req.session.user);
 				res.redirect('http://www.ibmic.cn')
 			})
 		} else {
