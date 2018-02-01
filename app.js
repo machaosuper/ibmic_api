@@ -46,11 +46,11 @@ var mongoStore = require('connect-mongo')(session);
 app.use(cookieParser());
 app.use(session({
 	secret: 'mac',
-	resave: false,
+	resave: true,
   	saveUninitialized: true,
 	store: new mongoStore({
 		url: dbUrl,
-		ttl: 14 * 24 * 60 * 60, // = 14 days. Default
+		// ttl: 14 * 24 * 60 * 60, // = 14 days. Default
 		collection: 'sessions'
 	})
 }));
