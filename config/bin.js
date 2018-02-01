@@ -12,9 +12,9 @@ module.exports = {
         port: 465,
         auth: {
             // 账号
-            user: 'ibmic@qq.com',
+            user: '272110541@qq.com',
             // 密码
-            pass: 'dgyaxfcxepbwchbc'
+            pass: 'zsedcftgb311211'
         }
     }
 }
