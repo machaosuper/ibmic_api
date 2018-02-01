@@ -119,7 +119,7 @@ exports.activation = function (req, res) {
 	            msg: '校验失败'
 	        })
 		}
-	}
+	})
 }
 
 exports.info = function (req, res) {
