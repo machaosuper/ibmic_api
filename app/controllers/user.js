@@ -46,11 +46,11 @@ exports.signup = function (req, res) {
 				} else {
 					// 设置邮件内容
 					user = new User(_user);
-					user.save(function (err, user) {
+					user.save(function (err, innerUser) {
 						if (err) {
 							console.log(err);
 						}
-						req.session.user = user;
+						req.session.user = innerUser;
 						var mailOptions = {
 							// 发件地址
 						    from: 'ibmic<272110541@qq.com>',
@@ -64,7 +64,7 @@ exports.signup = function (req, res) {
 						  			<div style="padding: 10px 0px 10px 0px;">
 						  				请点击以下链接，激活帐号:
 						  			</div>
-						  			<a style="color: #6093bb;" href="${config.apiUrl}blog/activation/${user.password.replace(/[\/&=\?]/g, '')}" target="_blank">${config.apiUrl}blog/activation/${user.password.replace(/[\/&=\?]/g, '')}</a>
+						  			<a style="color: #6093bb;" href="${config.apiUrl}blog/activation/${innerUser.password.replace(/[\/&=\?]/g, '')}" target="_blank">${config.apiUrl}blog/activation/${innerUser.password.replace(/[\/&=\?]/g, '')}</a>
 						  		</div>`
 						}
 						// 发送邮件
@@ -79,7 +79,7 @@ exports.signup = function (req, res) {
 							res.json({
 								code: '000000',
 								msg: '注册成功, 请查收邮件激活！',
-                                data: user
+                                data: innerUser
 							});
 						
 						  }
