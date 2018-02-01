@@ -41,7 +41,7 @@ module.exports = function (app) {
 	/*
 	 * 激活用户
 	 */
-	app.get('/blog/activation/:verify', User.activation)
+	app.get('/blog/activation/:verify/:id', User.activation)
 
 
 	/*

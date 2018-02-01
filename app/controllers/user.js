@@ -64,7 +64,7 @@ exports.signup = function (req, res) {
 						  			<div style="padding: 10px 0px 10px 0px;">
 						  				请点击以下链接，激活帐号:
 						  			</div>
-						  			<a style="color: #6093bb;" href="${config.apiUrl}blog/activation/${innerUser.password.replace(/[\/&=\?]/g, '')}" target="_blank">${config.apiUrl}blog/activation/${innerUser.password.replace(/[\/&=\?]/g, '')}</a>
+						  			<a style="color: #6093bb;" href="${config.apiUrl}blog/activation/${innerUser.password.replace(/[\/&=\?]/g, '')}/${innerUser._id}" target="_blank">${config.apiUrl}blog/activation/${innerUser.password.replace(/[\/&=\?]/g, '')}/${innerUser._id}</a>
 						  		</div>`
 						}
 						// 发送邮件
@@ -99,16 +99,26 @@ exports.signup = function (req, res) {
 
 exports.activation = function (req, res) {
 	var verify = req.params.verify;
-	var user = req.session.user;
-	if (verify === user.password.replace(/[\/&=\?]/g, '')) {
-		// user.role = 2;
-		// _user = new User(user);
-		User.update({_id: user._id}, {role: 2}, function (err, user) {
-			if (err) {
-				console.log(err);
-			}
-			res.redirect('http://www.ibmic.cn')
-		})
+	var userId = req.params.id;
+	User.findOne({_id: userId}, function (err, user) {
+		if (err) {
+			console.log(err);
+		}
+		if (user && user.password && verify === user.password.replace(/[\/&=\?]/g, '')) {
+			// user.role = 2;
+			// _user = new User(user);
+			User.update({_id: user._id}, {role: 2}, function (err, user) {
+				if (err) {
+					console.log(err);
+				}
+				res.redirect('http://www.ibmic.cn')
+			})
+		} else {
+			res.json({
+	            code: '000034',
+	            msg: '校验失败'
+	        })
+		}
 	}
 }
 
