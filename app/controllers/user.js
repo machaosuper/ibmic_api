@@ -111,12 +111,8 @@ exports.activation = function (req, res) {
 				if (err) {
 					console.log(err);
 				}
-				console.log('-------------------------');
-				console.log(user);
-				console.log('-------------------------');
-				console.log(req.session.user);
-				console.log('-------------------------');
-				req.session.user = user;
+
+				req.session.user.role = 2;
 				console.log('-------------------------');
 				console.log(req.session.user);
 				console.log('-------------------------');
