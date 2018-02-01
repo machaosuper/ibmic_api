@@ -47,6 +47,7 @@ app.use(cookieParser());
 app.use(session({
 	secret: 'mac',
 	resave: true,
+	rolling: true,
   	saveUninitialized: true,
 	store: new mongoStore({
 		url: dbUrl,
