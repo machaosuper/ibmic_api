@@ -119,8 +119,6 @@ exports.activation = function (req, res) {
 						console.log(err);
 					}
 					req.session.user = _user;
-					console.log('-------------------------')
-					console.log(req.session.user)
 					res.redirect('http://www.ibmic.cn')
 				})
 			})
@@ -134,13 +132,19 @@ exports.activation = function (req, res) {
 }
 
 exports.info = function (req, res) {
-    var user = req.session.user;
-    if (user) {
-        res.json({
-            code: '000000',
-            msg: '成功',
-            data: user
-        })
+    var _user = req.session.user;
+    if (_user) {
+    	User.findOne({_id: _user._id}, function (err, user) {
+			if (err) {
+				console.log(err);
+			}
+			res.json({
+	            code: '000000',
+	            msg: '成功',
+	            data: user
+	        })
+		})
+        
     } else {
         res.json({
             code: '000007',
